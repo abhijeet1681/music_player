@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/song.dart';
 import '../services/firebase_service.dart';
+import '../services/auth_service.dart';
 import 'add_edit_song_screen.dart';
 
 class AdminHomeScreen extends StatefulWidget {
@@ -21,8 +22,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, '/');
+            tooltip: 'Logout',
+            onPressed: () async {
+              await AuthService().signOut();
             },
           ),
         ],
@@ -45,42 +47,61 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           }
 
           return ListView.builder(
+            padding: const EdgeInsets.all(12),
             itemCount: songs.length,
             itemBuilder: (context, index) {
               final song = songs[index];
-              return ListTile(
-                leading: song.albumArt != null
-                    ? Image.network(song.albumArt!, width: 50, height: 50)
-                    : const Icon(Icons.music_note),
-                title: Text(song.title),
-                subtitle: Text(song.artist),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => AddEditSongScreen(song: song),
-                          ),
-                        );
-                      },
+              return Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                child: ListTile(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: song.albumArt != null
+                        ? Image.network(song.albumArt!,
+                            width: 60, height: 60, fit: BoxFit.cover)
+                        : const Icon(Icons.music_note, size: 40),
+                  ),
+                  title: Text(
+                    song.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => _firebaseService.deleteSong(song.id),
-                    ),
-                  ],
+                  ),
+                  subtitle: Text(song.artist),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => AddEditSongScreen(song: song),
+                            ),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => _firebaseService.deleteSong(song.id),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(
             context,
@@ -89,6 +110,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             ),
           );
         },
+        label: const Text('Add Song'),
+        icon: const Icon(Icons.add),
       ),
     );
   }

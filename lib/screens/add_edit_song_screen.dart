@@ -56,41 +56,66 @@ class _AddEditSongScreenState extends State<AddEditSongScreen> {
       appBar: AppBar(
         title: Text(widget.song == null ? 'Add Song' : 'Edit Song'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const Text(
+                "Song Details",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
               TextFormField(
                 initialValue: _title,
-                decoration: const InputDecoration(labelText: 'Title'),
+                decoration: const InputDecoration(
+                  labelText: 'Title',
+                  border: OutlineInputBorder(),
+                ),
                 onSaved: (value) => _title = value!,
                 validator: (value) => value!.isEmpty ? 'Required' : null,
               ),
+              const SizedBox(height: 16),
               TextFormField(
                 initialValue: _artist,
-                decoration: const InputDecoration(labelText: 'Artist'),
+                decoration: const InputDecoration(
+                  labelText: 'Artist',
+                  border: OutlineInputBorder(),
+                ),
                 onSaved: (value) => _artist = value!,
                 validator: (value) => value!.isEmpty ? 'Required' : null,
               ),
+              const SizedBox(height: 16),
               TextFormField(
                 initialValue: _url,
-                decoration: const InputDecoration(labelText: 'Audio URL'),
+                decoration: const InputDecoration(
+                  labelText: 'Audio URL',
+                  border: OutlineInputBorder(),
+                ),
                 onSaved: (value) => _url = value!,
                 validator: (value) => value!.isEmpty ? 'Required' : null,
               ),
+              const SizedBox(height: 16),
               TextFormField(
                 initialValue: _albumArt,
                 decoration: const InputDecoration(
-                    labelText: 'Album Art URL (optional)'),
+                  labelText: 'Album Art URL (optional)',
+                  border: OutlineInputBorder(),
+                ),
                 onSaved: (value) => _albumArt = value,
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
                 onPressed: _saveSong,
-                child: const Text('Save'),
-              )
+                icon: const Icon(Icons.save),
+                label: const Text('Save Song'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  textStyle: const TextStyle(fontSize: 16),
+                ),
+              ),
             ],
           ),
         ),

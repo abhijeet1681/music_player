@@ -21,7 +21,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
     super.initState();
     _player = AudioPlayer();
     _initAudio();
+
     _player.playerStateStream.listen((state) {
+      if (!mounted) return;
       setState(() {
         _isPlaying = state.playing;
         _isBuffering = state.processingState == ProcessingState.buffering;
@@ -33,6 +35,7 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
     try {
       await _player.setUrl(widget.song.url);
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to load audio')),
       );
@@ -50,20 +53,47 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.song.title),
+        centerTitle: true,
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            widget.song.albumArt != null
-                ? Image.network(widget.song.albumArt!, width: 200, height: 200)
-                : const Icon(Icons.music_note, size: 200),
             const SizedBox(height: 20),
+            Center(
+              child: widget.song.albumArt != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.network(
+                        widget.song.albumArt!,
+                        width: 250,
+                        height: 250,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : Container(
+                      width: 250,
+                      height: 250,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(Icons.music_note, size: 100),
+                    ),
+            ),
+            const SizedBox(height: 30),
+            Text(
+              widget.song.title,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
             Text(
               widget.song.artist,
-              style: const TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 18, color: Colors.grey),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             StreamBuilder<Duration>(
               stream: _player.positionStream,
               builder: (context, snapshot) {
@@ -77,16 +107,15 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
                         Slider(
                           min: 0,
                           max: duration.inMilliseconds.toDouble(),
-                          value: position.inMilliseconds.toDouble().clamp(
-                                0.0,
-                                duration.inMilliseconds.toDouble(),
-                              ),
+                          value: position.inMilliseconds
+                              .clamp(0, duration.inMilliseconds)
+                              .toDouble(),
                           onChanged: (value) {
                             _player.seek(Duration(milliseconds: value.toInt()));
                           },
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -107,26 +136,41 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.skip_previous, size: 36),
-                  onPressed: () {}, // Implement previous song
-                ),
-                IconButton(
-                  icon: _isBuffering
-                      ? const CircularProgressIndicator()
-                      : Icon(
-                          _isPlaying ? Icons.pause : Icons.play_arrow,
-                          size: 48,
-                        ),
                   onPressed: () {
-                    if (_isPlaying) {
-                      _player.pause();
-                    } else {
-                      _player.play();
-                    }
+                    // implement skip to previous
                   },
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  child: IconButton(
+                    iconSize: 40,
+                    icon: _isBuffering
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : Icon(
+                            _isPlaying ? Icons.pause : Icons.play_arrow,
+                            color: Colors.white,
+                          ),
+                    onPressed: () {
+                      _isPlaying ? _player.pause() : _player.play();
+                    },
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.skip_next, size: 36),
-                  onPressed: () {}, // Implement next song
+                  onPressed: () {
+                    // implement skip to next
+                  },
                 ),
               ],
             ),
@@ -138,12 +182,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
 
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);
     final seconds = duration.inSeconds.remainder(60);
 
-    return hours > 0
-        ? '${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}'
-        : '${twoDigits(minutes)}:${twoDigits(seconds)}';
+    return '${twoDigits(minutes)}:${twoDigits(seconds)}';
   }
 }

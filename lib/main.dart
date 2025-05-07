@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'screens/user_home_screen.dart';
 import 'screens/admin_home_screen.dart';
 import 'screens/login_screen.dart'; // You'll need to create this
+import 'screens/wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,12 +22,13 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.indigo,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const LoginScreen(), // Simple login screen
-        '/user': (context) => const UserHomeScreen(),
-        '/admin': (context) => const AdminHomeScreen(),
-      },
+      // initialRoute: '/',
+      // routes: {
+      //   '/': (context) => const LoginScreen(), // Simple login screen
+      //   '/user': (context) => const UserHomeScreen(),
+      //   '/admin': (context) => const AdminHomeScreen(),
+      // },
+      home: const Wrapper(),
     );
   }
 }
