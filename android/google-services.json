@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1018807673580",
+    "project_id": "musicplayerflutter-69302",
+    "storage_bucket": "musicplayerflutter-69302.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1018807673580:android:6900a30fcf79dd998ebbc9",
+        "android_client_info": {
+          "package_name": "com.example.musicolie"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1xEPMjXsygIWb9qxi81BADT6AX-hM5jg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
