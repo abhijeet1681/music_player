@@ -39,7 +39,7 @@ dependencies:
   firebase_storage: ^11.7.2
   just_audio: ^0.9.36
   audio_session: ^0.1.18
-  provider: ^6.1.2
+  # provider: ^6.1.2
   audioplayers: ^6.1.0
   rxdart: ^0.27.7
 

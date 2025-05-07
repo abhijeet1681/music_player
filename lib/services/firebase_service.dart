@@ -5,19 +5,16 @@ class FirebaseService {
   final CollectionReference _songsCollection =
       FirebaseFirestore.instance.collection('songs');
 
-  Future<List<Song>> getSongs() async {
-    try {
-      final querySnapshot = await _songsCollection.get();
-      return querySnapshot.docs
-          .map(
-              (doc) => Song.fromMap(doc.data() as Map<String, dynamic>, doc.id))
-          .toList();
-    } catch (e) {
-      print("Error getting songs: $e");
-      return [];
-    }
+  // Get all songs
+  Stream<List<Song>> get songsStream {
+    return _songsCollection.snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return Song.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+      }).toList();
+    });
   }
 
+  // Add a new song
   Future<void> addSong(Song song) async {
     try {
       await _songsCollection.add(song.toMap());
@@ -27,6 +24,7 @@ class FirebaseService {
     }
   }
 
+  // Update a song
   Future<void> updateSong(Song song) async {
     try {
       await _songsCollection.doc(song.id).update(song.toMap());
@@ -36,6 +34,7 @@ class FirebaseService {
     }
   }
 
+  // Delete a song
   Future<void> deleteSong(String id) async {
     try {
       await _songsCollection.doc(id).delete();
